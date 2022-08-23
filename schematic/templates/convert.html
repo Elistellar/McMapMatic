@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load schematic_extras %}
+
+{% block js %}
+<script src="{% static 'js/convert.js' %}"></script>
+{% endblock js %}
+
+{% block body %}
+<!-- Navbar & Hero Start -->
+<div class="container-fluid position-relative p-0">
+    <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+        <a href="{% url 'index' %}" class="navbar-brand p-0">
+            <h1 class="m-0">Mc MapMatic</h1>
+            <!-- <img src="img/logo.png" alt="Logo"> -->
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="fa fa-bars"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="{% url 'index' %}" class="nav-item nav-link">Home</a>
+                <a href="{% url 'convert' %}" class="nav-item nav-link active">Convert</a>
+                <a href="https://github.com/Elistellar/mcmapmatic" class="nav-item nav-link">Source code</a>
+            </div>
+            <a href="{% url 'convert' %}" class="btn btn-light rounded-pill text-primary py-2 px-4 ms-lg-5">Convert</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid bg-primary hero-header" style="padding-top: 8em;padding-bottom: 1em">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6 text-center text-lg-start">
+                    <h1 class="text-white mb-4 animated zoomIn">Convert your beautiful pictures into Minecraft Map</h1>
+                    <p class="text-white pb-3 animated zoomIn">It only take a few seconds</p>
+                </div>
+                <div class="col-lg-6 text-center text-lg-start">
+                    <img class="img-fluid animated zoomIn" src="img/hero.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Navbar & Hero End -->
+
+<!-- Features Start -->
+{% comment %} Illustration by <a href="https://icons8.com/illustrations/author/u7l2K4BCiAa9">Natasha Remarchuk</a> from <a href="https://icons8.com/illustrations">Ouch!</a> {% endcomment %}
+<form class="container-fluid d-flex flex-column align-items-center wow fadeInUp" method="POST" enctype="multipart/form-data">
+
+    <label for="upload_image">
+        <div class="border border-primary rounded p-2" style="width: fit-content !important; cursor: pointer">
+            <img src="{% static 'img/blank.png' %}" class="rounded" id="img_preview">
+            <p class="text-center my-2">Upload an image</p>
+        </div>
+    </label>
+    <input required hidden type="file" id="upload_image" accept="image/jpeg, image/png" onchange="updateImage(this, 'img_preview')" style="width: 256px;height: 256px" name="img">
+
+    <div class="d-flex flex-wrap justify-content-center m-5 border border-primary rounded p-3">
+        {% for color in colors %}
+
+        <div class="border border-secondary rounded m-2 p-1 d-flex bg-light align-items-center">
+
+            <label for="color_{{ color.id }}">
+                <div class="rounded me-2" style="width: 30px;height: 30px;background-color: rgb{{ color.base_color }}"></div>
+            </label>
+            <input type="checkbox" checked id="color_{{ color.id }}" class="form-check-input m-0" name="color_{{ color.id }}">
+
+            <div class="dropdown">
+                <button class="btn py-0 px-1 my-0 ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% comment %} <i class="bi bi-caret-down-fill" style="width:16px;height:16px"></i> {% endcomment %}
+                    <img src="{{ color.blocks.0.blockid|get_img }}" id="img-{{ color.id }}" style="width:24px;height:24px">
+                </button>
+                <ul class="dropdown-menu">
+                    {% for i, block in color.blocks|with_idx %}
+                    <li class="dropdown-item d-flex justify-content-start align-items-center">
+                        <input type="radio" value="{{ block.blockid }}" {% if i == 0 %}checked{% endif %} class="dropdown-item me-2" onchange="setImg(this)" name="color_{{ color.id }}_block" id="{{ block.blockid }}" style="width:16px;height:16px">
+                        <img src="{{ block.blockid|get_img }}" style="width:24px;height:24px" class="me-1">
+                        <label for="{{ block.blockid }}">{{ block.blockid|name }}</label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        
+        </div>
+
+        {% endfor %}
+    </div>
+
+    <input type="submit" class="btn btn-outline-primary" value="Convert !">
+</div>
+<!-- Features End -->
+
+{% endblock body %}
