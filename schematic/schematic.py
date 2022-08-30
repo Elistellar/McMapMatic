@@ -19,7 +19,7 @@ class Schematic:
     def edit_image(cls, image: bytes, palette: Image) -> Image:
         base_image = Image.open(image)
         square_image = Image.new(mode='RGB', size=(128, 128))
-        square_image = base_image.quantize(palette=palette).convert('RGB')
+        square_image = base_image.convert('RGB').quantize(palette=palette).convert('RGB')
         return square_image
     
     @classmethod
